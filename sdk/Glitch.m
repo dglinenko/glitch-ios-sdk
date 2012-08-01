@@ -37,10 +37,6 @@ NSString * AccessTokenSavePath() {
 }
 
 
-@synthesize accessToken = _accessToken,
-                sessionDelegate = _sessionDelegate;
-
-
 #pragma mark - Initialization
 
 - (id)initWithDelegate:(id<GCSessionDelegate>)delegate
@@ -79,7 +75,7 @@ NSString * AccessTokenSavePath() {
     if (savedToken)
     {
         // Using saved token
-        _accessToken = [savedToken copy];
+        self.accessToken = [savedToken copy];
         
         // Call auth.check to validate token before proceeding
         GCRequest * request = [self requestWithMethod:@"auth.check" delegate:self];
@@ -125,21 +121,21 @@ NSString * AccessTokenSavePath() {
         if (accessToken)
         {
             // Successfully logged in! Yay!
-            _accessToken = [accessToken copy];
+            self.accessToken = [accessToken copy];
             
             [self saveAccessTokenToDisk];
             
-            if ([_sessionDelegate respondsToSelector:@selector(glitchLoginSuccess)])
+            if ([self.sessionDelegate respondsToSelector:@selector(glitchLoginSuccess)])
             {
-                [_sessionDelegate glitchLoginSuccess];
+                [self.sessionDelegate glitchLoginSuccess];
             }
         }
         else
         {
             // Throw ERROR!
-            if ([_sessionDelegate respondsToSelector:@selector(glitchLoginFail:)])
+            if ([self.sessionDelegate respondsToSelector:@selector(glitchLoginFail:)])
             {
-                [_sessionDelegate glitchLoginFail:nil];
+                [self.sessionDelegate glitchLoginFail:nil];
             }
         }
     }
@@ -148,19 +144,19 @@ NSString * AccessTokenSavePath() {
 
 - (void)logout
 {
-    _accessToken = nil;
+    self.accessToken = nil;
     [[NSFileManager defaultManager] removeItemAtPath:AccessTokenSavePath() error:nil];
     
-    if ([_sessionDelegate respondsToSelector:@selector(glitchLoggedOut)])
+    if ([self.sessionDelegate respondsToSelector:@selector(glitchLoggedOut)])
     {
-        [_sessionDelegate glitchLoggedOut];
+        [self.sessionDelegate glitchLoggedOut];
     }
 }
 
 
 - (BOOL)isAuthenticated
 {
-    return !_authenticating && _accessToken;
+    return !_authenticating && self.accessToken;
 }
 
 
@@ -168,7 +164,7 @@ NSString * AccessTokenSavePath() {
 
 - (void)saveAccessTokenToDisk
 {
-    [NSKeyedArchiver archiveRootObject:_accessToken toFile:AccessTokenSavePath()];
+    [NSKeyedArchiver archiveRootObject:self.accessToken toFile:AccessTokenSavePath()];
 }
 
 
@@ -176,7 +172,7 @@ NSString * AccessTokenSavePath() {
 
 - (GCRequest*)requestWithMethod:(NSString*)method delegate:(id<GCRequestDelegate>)delegate params:(NSDictionary*)params additionalData:(NSDictionary*)additionalData
 {
-    NSMutableDictionary * requestParams = [NSMutableDictionary dictionaryWithObject:_accessToken forKey:@"oauth_token"];
+    NSMutableDictionary * requestParams = [NSMutableDictionary dictionaryWithObject:self.accessToken forKey:@"oauth_token"];
     
     if (params)
     {
@@ -218,9 +214,9 @@ NSString * AccessTokenSavePath() {
             {
                 _authenticating = NO;
                 
-                if ([_sessionDelegate respondsToSelector:@selector(glitchLoginSuccess)])
+                if ([self.sessionDelegate respondsToSelector:@selector(glitchLoginSuccess)])
                 {
-                    [_sessionDelegate glitchLoginSuccess];
+                    [self.sessionDelegate glitchLoginSuccess];
                 }
                 
                 return;
@@ -247,7 +243,7 @@ NSString * AccessTokenSavePath() {
     if (additionalData)
     {
         // Remove old auth key re-auth
-        _accessToken = nil;
+        self.accessToken = nil;
         [[NSFileManager defaultManager] removeItemAtPath:AccessTokenSavePath() error:nil];
         
         id scope = [additionalData objectForKey:@"scope"];

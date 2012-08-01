@@ -78,7 +78,6 @@
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Nooooo!" message:@"The API request was not ok!" 
                                                                delegate:self cancelButtonTitle:@"Darn" otherButtonTitles:nil];
                 [alert show];
-                [alert release];
             }
         }
     }
@@ -91,7 +90,6 @@
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oh no!" message:@"The API request failed!" 
                                                    delegate:self cancelButtonTitle:@":-(" otherButtonTitles:nil];
     [alert show];
-    [alert release];
 }
 
 
@@ -116,7 +114,6 @@
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oh no!" message:@"Glitch login failed!" 
                                                    delegate:self cancelButtonTitle:@":-(" otherButtonTitles:nil];
     [alert show];
-    [alert release];
 }
 
 
@@ -137,13 +134,6 @@
 }
 
 
--(void)dealloc
-{
-    [_glitch release];
-    [_playerNameLabel release];
-    
-    [super dealloc];
-}
 
 
 @end

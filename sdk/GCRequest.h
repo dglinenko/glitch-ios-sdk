@@ -27,24 +27,17 @@
 @protocol GCRequestDelegate;
 
 
-@interface GCRequest : NSObject {
-    NSString * _url; // Full url for request, e.g. "http://api.glitch.com/simple/players.info"
-    NSString * _method; // Specific method without 'simple', e.g. "players.info"
-    NSDictionary * _params; // Dictionary of parameters passed in the request
-    id<GCRequestDelegate> _requestDelegate; // Delegate that will be called when events occur before, during, and after the request
-    NSURLConnection * _connection; // Connection object - this is held on to until the request completes
-    NSMutableData * _receivedResponseData; // Response data, filled up as information is received from the server
-    NSDictionary * _additionalData; // Optional additional data dictionary, can be used to store whatever you want that relates to a particular request
-}
+@interface GCRequest : NSObject
+
+@property (nonatomic, copy) NSString * url; // Full url for request, e.g. "http://api.glitch.com/simple/players.info"
+@property (nonatomic, copy) NSString * method; // Specific method without 'simple', e.g. "players.info"
+@property (nonatomic, copy) NSDictionary * params; // Dictionary of parameters passed in the request
+@property (nonatomic, weak) id<GCRequestDelegate> requestDelegate; // Delegate that will be called when events occur before, during, and after the request
+@property (nonatomic, strong) NSURLConnection * connection; // Connection object - this is held on to until the request completes
+@property (nonatomic, strong) NSMutableData * receivedResponseData; // Response data, filled up as information is received from the server
+@property (nonatomic, copy) NSDictionary * additionalData; // Optional additional data dictionary, can be used to store whatever you want that relates to a particular request
 
 
-@property (nonatomic, copy) NSString * url;
-@property (nonatomic, copy) NSString * method;
-@property (nonatomic, copy) NSDictionary * params;
-@property (nonatomic, assign) id<GCRequestDelegate> requestDelegate;
-@property (nonatomic, assign) NSURLConnection * connection;
-@property (nonatomic, assign) NSMutableData * receivedResponseData;
-@property (nonatomic, copy) NSDictionary * additionalData;
 
 
 #pragma mark - Initialization

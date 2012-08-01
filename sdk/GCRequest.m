@@ -33,15 +33,6 @@ static NSTimeInterval const GCTimeout = 120;
 @implementation GCRequest
 
 
-@synthesize url = _url,
-                method = _method,
-                params = _params,
-                requestDelegate = _requestDelegate,
-                connection = _connection,
-                receivedResponseData = _receivedResponseData,
-                additionalData = _additionalData;
-
-
 #pragma mark - Initialization
 
 // Do not call this directly - call Glitch, which will call this lower-level method
@@ -54,7 +45,7 @@ static NSTimeInterval const GCTimeout = 120;
                           params:(NSDictionary*)params
                   additionalData:(NSDictionary*)additionalData
 {
-    GCRequest * request = [[[GCRequest alloc] init] autorelease];
+    GCRequest * request = [[GCRequest alloc] init];
     request.method = method;
     request.url = [NSString stringWithFormat:@"%@%@",GCAPIUrlPrefix,method];
     request.params = params;
@@ -80,7 +71,7 @@ static NSTimeInterval const GCTimeout = 120;
     [request setValue:GCUserAgent forHTTPHeaderField:@"User-Agent"]; // Set our user agent so the server knows that we're calling from the iOS SDK
     
     // Initialize and start the connection
-    _connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:YES];
+    self.connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:YES];
 }
 
 
@@ -88,12 +79,12 @@ static NSTimeInterval const GCTimeout = 120;
 - (id)parseResponse:(NSData *)data
 { 
     // Transform the data into a string
-    NSString * responseString = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+    NSString * responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] ;
     
     // If the data transformation succeeds, parse the JSON into an object
     if (responseString)
     {
-        SBJsonParser * jsonParser = [[SBJsonParser new] autorelease];
+        SBJsonParser * jsonParser = [SBJsonParser new];
         return [jsonParser objectWithString:responseString];
     }
     
@@ -104,8 +95,9 @@ static NSTimeInterval const GCTimeout = 120;
 #pragma mark - Utility
 
 + (NSString *)urlEncodeString:(NSString*)string {
-	return (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,
-                                                               (CFStringRef)string,
+
+	return (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,
+                                                               (__bridge CFStringRef)string,
                                                                NULL,
                                                                (CFStringRef)@"!*'\"();:@&=+$,/?%#[]% ",
                                                                CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
@@ -139,7 +131,7 @@ static NSTimeInterval const GCTimeout = 120;
 {
     NSArray * pairs = [fragment componentsSeparatedByString:@"&"];
 	
-    NSMutableDictionary * params = [[[NSMutableDictionary alloc] init] autorelease];
+    NSMutableDictionary * params = [[NSMutableDictionary alloc] init];
 	
     for (NSString * pair in pairs) {
 		NSArray * keyValue = [pair componentsSeparatedByString:@"="];
@@ -156,13 +148,12 @@ static NSTimeInterval const GCTimeout = 120;
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-    [_receivedResponseData release];
-	_receivedResponseData = [[NSMutableData alloc] init];
+	self.receivedResponseData = [[NSMutableData alloc] init];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-	[_receivedResponseData appendData:data];
+	[self.receivedResponseData appendData:data];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
@@ -177,8 +168,8 @@ static NSTimeInterval const GCTimeout = 120;
         }
     }
     
-    [_connection release], _connection = nil;
-	[_receivedResponseData release], _receivedResponseData = nil;
+     _connection = nil;
+	 _receivedResponseData = nil;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
@@ -188,19 +179,8 @@ static NSTimeInterval const GCTimeout = 120;
         [_requestDelegate requestFailed:self withError:error];
     }
     
-	[_connection release], _connection = nil;
-	[_receivedResponseData release], _receivedResponseData = nil;
+	self.connection = nil;
+	self.receivedResponseData = nil;
 }
-
-
-- (void)dealloc {
-    [_url release], _url = nil;
-    [_method release], _method = nil;
-    [_params release], _params = nil;
-    [_additionalData release], _additionalData = nil;
-    
-    [super dealloc];
-}
-
 
 @end

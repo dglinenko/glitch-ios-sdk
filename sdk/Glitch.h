@@ -29,8 +29,6 @@
 
 
 @interface Glitch : NSObject <GCRequestDelegate> {
-    NSString * _accessToken;
-    id<GCSessionDelegate> _sessionDelegate;
     BOOL _authenticating;
 }
 

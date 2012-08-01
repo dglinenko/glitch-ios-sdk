@@ -57,13 +57,6 @@
 	return self;
 }
 
-- (void)dealloc {
-	self.error = nil;
-    self.state = nil;
-	[stateStack release];
-	[tokeniser release];
-	[super dealloc];
-}
 
 #pragma mark Methods
 
@@ -119,7 +112,7 @@
 }
 
 - (void)maxDepthError {
-    self.error = [NSString stringWithFormat:@"Input depth exceeds max depth of %lu", maxDepth];
+    self.error = [NSString stringWithFormat:@"Input depth exceeds max depth of %u", maxDepth];
     self.state = [SBJsonStreamParserStateError sharedInstance];
 }
 
@@ -168,8 +161,7 @@
 }
 
 - (SBJsonStreamParserStatus)parse:(NSData *)data_ {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    @try {
+    @autoreleasepool {
         [tokeniser appendData:data_];
         
         for (;;) {
@@ -254,10 +246,6 @@
             }
         }
         return SBJsonStreamParserComplete;
-
-    }
-    @finally {
-        [pool drain];
     }
 }
 

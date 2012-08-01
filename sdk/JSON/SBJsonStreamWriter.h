@@ -86,14 +86,14 @@
     NSMutableDictionary *cache;
 }
 
-@property (nonatomic, assign) SBJsonStreamWriterState *state; // Internal
-@property (nonatomic, readonly, retain) NSMutableArray *stateStack; // Internal 
+@property (nonatomic, unsafe_unretained) SBJsonStreamWriterState *state; // Internal
+@property (nonatomic, readonly, strong) NSMutableArray *stateStack; // Internal 
 
 /**
  @brief delegate to receive JSON output
  Delegate that will receive messages with output.
  */
-@property (assign) id<SBJsonStreamWriterDelegate> delegate;
+@property (unsafe_unretained) id<SBJsonStreamWriterDelegate> delegate;
 
 /**
  @brief The maximum recursing depth.
@@ -121,6 +121,13 @@
  (This is useful if you need to compare two structures, for example.) The default is NO.
  */
 @property BOOL sortKeys;
+
+/**
+ @brief An optional comparator to be used if sortKeys is YES.
+ 
+ If this is nil, sorting will be done via @selector(compare:).
+ */
+@property (copy) NSComparator sortKeysComparator;
 
 /// Contains the error description after an error has occured.
 @property (copy) NSString *error;
