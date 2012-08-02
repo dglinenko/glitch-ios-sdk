@@ -11,4 +11,4 @@ If you have any feedback or find bugs, please let us know on the [Glitch Develop
 Sample App
 ---------------
 
-* Open the included sample app in Xcode 4.1 or above to see OAuth and the API in action
+* Open the included sample app in Xcode 4.4 or above to see OAuth and the API in action
