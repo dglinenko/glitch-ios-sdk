@@ -63,7 +63,7 @@ static NSTimeInterval const GCTimeout = 120;
 - (void)connect
 {
     // Serialize URL with parameters if we have them, otherwise, use our base URL
-    NSString * url = _params != nil ? [GCRequest serializeURL:_url params:_params] : _url;
+    NSString * url = self.params != nil ? [GCRequest serializeURL:self.url params:self.params] : self.url;
     
     // Create the request that we're going to send
     NSMutableURLRequest * request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:GCTimeout];
@@ -158,25 +158,25 @@ static NSTimeInterval const GCTimeout = 120;
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    id result = [self parseResponse:_receivedResponseData];
+    id result = [self parseResponse:self.receivedResponseData];
     
     if (result)
     {
-        if ([_requestDelegate respondsToSelector:@selector(requestFinished:withResult:)])
+        if ([self.requestDelegate respondsToSelector:@selector(requestFinished:withResult:)])
         {
-            [_requestDelegate requestFinished:self withResult:result];
+            [self.requestDelegate requestFinished:self withResult:result];
         }
     }
     
-     _connection = nil;
-	 _receivedResponseData = nil;
+     self.connection = nil;
+	 self.receivedResponseData = nil;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    if ([_requestDelegate respondsToSelector:@selector(requestFailed:withError:)])
+    if ([self.requestDelegate respondsToSelector:@selector(requestFailed:withError:)])
     {
-        [_requestDelegate requestFailed:self withError:error];
+        [self.requestDelegate requestFailed:self withError:error];
     }
     
 	self.connection = nil;
